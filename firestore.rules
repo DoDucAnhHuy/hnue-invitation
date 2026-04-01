@@ -1,0 +1,23 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Templates: ai đọc cũng được, chỉ admin mới write
+    match /templates/{templateId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Invitations: ai đọc cũng được, tạo mới thì cần validate
+    match /invitations/{invitationId} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasAll(['name', 'class', 'time', 'location', 'template_id'])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 100
+        && request.resource.data.images.size() <= 3;
+      allow update, delete: if false;
+    }
+  }
+}

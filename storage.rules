@@ -1,0 +1,13 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /invitations/{filename} {
+      // Ai cũng đọc được (để hiển thị ảnh trên thiệp)
+      allow read: if true;
+      // Upload: max 5MB, chỉ nhận ảnh
+      allow write: if request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+    }
+  }
+}
