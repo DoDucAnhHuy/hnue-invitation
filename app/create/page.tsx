@@ -2,10 +2,25 @@
 
 import { useState, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage'
-import { storage } from '@/lib/firebase'
 import { TEMPLATES } from '@/lib/templates'
-import { nanoid } from 'nanoid'
+
+const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!
+const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!
+
+async function uploadToCloudinary(file: File): Promise<string> {
+  const formData = new FormData()
+  formData.append('file', file)
+  formData.append('upload_preset', UPLOAD_PRESET)
+  formData.append('folder', 'hnue-invitation')
+
+  const res = await fetch(
+    `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`,
+    { method: 'POST', body: formData }
+  )
+  if (!res.ok) throw new Error('Upload ảnh thất bại')
+  const data = await res.json()
+  return data.secure_url.replace('/upload/', '/upload/f_auto,q_auto,w_800/')
+}
 
 function CreateForm() {
   const router = useRouter()
@@ -48,12 +63,10 @@ function CreateForm() {
 
     setLoading(true)
     try {
-      // Upload images to Firebase Storage
+      // Upload ảnh lên Cloudinary
       const imageUrls: string[] = []
       for (const file of images) {
-        const storageRef = ref(storage, `invitations/${nanoid()}-${file.name}`)
-        await uploadBytes(storageRef, file)
-        const url = await getDownloadURL(storageRef)
+        const url = await uploadToCloudinary(file)
         imageUrls.push(url)
       }
 
@@ -87,7 +100,6 @@ function CreateForm() {
 
   return (
     <main className="min-h-screen bg-gray-50 pb-24">
-      {/* Header */}
       <div className="bg-white border-b border-gray-100 px-4 py-4 flex items-center gap-3">
         <button onClick={() => router.push('/')} className="text-gray-400 hover:text-gray-600">←</button>
         <h1 className="font-semibold text-gray-900">Tạo thiệp kỉ yếu</h1>
@@ -185,7 +197,6 @@ function CreateForm() {
         )}
       </div>
 
-      {/* Submit */}
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4">
         <button
           onClick={handleSubmit}
