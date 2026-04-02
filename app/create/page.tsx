@@ -2,6 +2,7 @@
 
 import { useState, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { motion } from 'framer-motion'
 import { TEMPLATES } from '@/lib/templates'
 
 const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!
@@ -100,20 +101,32 @@ function CreateForm() {
 
   return (
     <main className="min-h-screen bg-gray-50 pb-24">
-      <div className="bg-white border-b border-gray-100 px-4 py-4 flex items-center gap-3">
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35 }}
+        className="bg-white border-b border-gray-100 px-4 py-4 flex items-center gap-3"
+      >
         <button onClick={() => router.push('/')} className="text-gray-400 hover:text-gray-600">←</button>
         <h1 className="font-semibold text-gray-900">Tạo thiệp kỉ yếu</h1>
-      </div>
+      </motion.div>
 
       <div className="max-w-lg mx-auto px-4 pt-6 space-y-6">
         {/* Template picker */}
-        <div>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.3 }}
+          transition={{ duration: 0.4 }}
+        >
           <p className="text-sm font-medium text-gray-700 mb-3">Phong cách</p>
           <div className="flex gap-2">
             {TEMPLATES.map(t => (
-              <button
+              <motion.button
                 key={t.id}
                 onClick={() => setTemplateId(t.id)}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
                 className={`flex-1 py-2 px-3 rounded-xl text-sm border transition-all
                   ${templateId === t.id
                     ? 'border-gray-900 bg-gray-900 text-white'
@@ -121,13 +134,19 @@ function CreateForm() {
                   }`}
               >
                 {t.name}
-              </button>
+              </motion.button>
             ))}
           </div>
-        </div>
+        </motion.div>
 
         {/* Fields */}
-        <div className="bg-white rounded-2xl border border-gray-100 divide-y divide-gray-50">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.45 }}
+          className="bg-white rounded-2xl border border-gray-100 divide-y divide-gray-50"
+        >
           {[
             { label: 'Tên *', value: name, setter: setName, placeholder: 'Nguyễn Văn A' },
             { label: 'Lớp *', value: cls, setter: setCls, placeholder: 'K61 CNTT' },
@@ -154,14 +173,23 @@ function CreateForm() {
               className="w-full text-gray-900 placeholder-gray-300 outline-none text-sm resize-none"
             />
           </div>
-        </div>
+        </motion.div>
 
         {/* Image upload */}
-        <div>
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.45 }}
+        >
           <p className="text-sm font-medium text-gray-700 mb-3">Ảnh (tối đa 3)</p>
           <div className="flex gap-3 flex-wrap">
             {previews.map((src, i) => (
-              <div key={i} className="relative w-24 h-24 rounded-xl overflow-hidden bg-gray-100">
+              <motion.div
+                key={i}
+                whileHover={{ scale: 1.05 }}
+                className="relative w-24 h-24 rounded-xl overflow-hidden bg-gray-100"
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={src} alt="" className="w-full h-full object-cover" />
                 <button
@@ -170,16 +198,18 @@ function CreateForm() {
                 >
                   ×
                 </button>
-              </div>
+              </motion.div>
             ))}
             {images.length < 3 && (
-              <button
+              <motion.button
                 onClick={() => fileRef.current?.click()}
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
                 className="w-24 h-24 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-300 hover:border-gray-400 transition-colors"
               >
                 <span className="text-2xl">+</span>
                 <span className="text-xs mt-1">Thêm ảnh</span>
-              </button>
+              </motion.button>
             )}
           </div>
           <input
@@ -190,21 +220,30 @@ function CreateForm() {
             className="hidden"
             onChange={e => handleFiles(e.target.files)}
           />
-        </div>
+        </motion.div>
 
         {error && (
-          <p className="text-red-500 text-sm bg-red-50 px-4 py-3 rounded-xl">{error}</p>
+          <motion.p
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25 }}
+            className="text-red-500 text-sm bg-red-50 px-4 py-3 rounded-xl"
+          >
+            {error}
+          </motion.p>
         )}
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4">
-        <button
+        <motion.button
           onClick={handleSubmit}
           disabled={loading}
+          whileHover={{ scale: loading ? 1 : 1.01 }}
+          whileTap={{ scale: loading ? 1 : 0.99 }}
           className="w-full max-w-lg mx-auto block bg-gray-900 text-white py-3.5 rounded-2xl font-medium hover:bg-gray-800 disabled:opacity-50 transition-colors"
         >
           {loading ? 'Đang tạo thiệp...' : 'Tạo thiệp →'}
-        </button>
+        </motion.button>
       </div>
     </main>
   )
