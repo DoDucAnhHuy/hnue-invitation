@@ -1,3 +1,10 @@
+export interface FieldLimits {
+  name: number
+  time: number
+  location: number
+  message: number
+}
+
 export interface Template {
   id: string
   name: string
@@ -5,6 +12,7 @@ export interface Template {
   keywords: string[]
   preview_url: string
   color_scheme: string
+  fieldLimits: FieldLimits
 }
 
 export interface Invitation {

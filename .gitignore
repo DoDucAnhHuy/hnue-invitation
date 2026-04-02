@@ -36,3 +36,7 @@ Thumbs.db
 
 # local working notes
 skill.md
+
+# local installers or binaries
+temp/Claude Setup.exe
+temp/*.exe

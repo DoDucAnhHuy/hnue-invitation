@@ -14,14 +14,14 @@ export default function HomePage() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="bg-white border-b border-gray-100 px-4 py-16 text-center"
+        className="bg-white border-b border-gray-100 px-4 py-12 sm:py-16 text-center"
       >
         <p className="text-sm text-gray-400 uppercase tracking-widest mb-3">HNUE Invitation</p>
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4 leading-tight">
           Thiệp kỉ yếu của bạn<br />
           <span className="text-pink-500">trong 1 phút</span>
         </h1>
-        <p className="text-gray-500 mb-8 max-w-xs mx-auto">
+        <p className="text-gray-500 mb-8 max-w-xs sm:max-w-sm mx-auto text-sm sm:text-base">
           Chọn template, nhập thông tin, nhận link chia sẻ ngay. Không cần kỹ năng thiết kế.
         </p>
         <motion.button
@@ -40,7 +40,7 @@ export default function HomePage() {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.45 }}
-        className="px-4 py-12 max-w-lg mx-auto"
+        className="px-4 py-10 sm:py-12 max-w-lg mx-auto"
       >
         <h2 className="text-lg font-semibold text-gray-800 mb-6 text-center">Chọn phong cách</h2>
         <div className="space-y-4">
@@ -65,6 +65,7 @@ export default function HomePage() {
                   {t.color_scheme === 'pink' ? '🌸' : t.color_scheme === 'blue' ? '✨' : '◻️'}
                 </span>
               </div>
+
               <div>
                 <p className="font-semibold text-gray-900">{t.name}</p>
                 <p className="text-sm text-gray-500">{t.description}</p>

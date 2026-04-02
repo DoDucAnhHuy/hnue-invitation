@@ -1,12 +1,27 @@
 'use client'
 
-import { useState, useRef, Suspense } from 'react'
+import { useState, useRef, Suspense, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { TEMPLATES } from '@/lib/templates'
 
+const DEFAULT_FIELD_LIMITS = { name: 25, time: 35, location: 40, message: 60 }
+
 const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!
 const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!
+const FALLBACK_PREVIEW_URL = '/previews/GrungeSilver.png'
+
+const IMAGE_RULES: Record<string, { min: number; max: number; label: string }> = {
+  'blue-yellow-scrapbook': { min: 3, max: 3, label: 'Ảnh (bắt buộc đúng 3)' },
+  'cute-pink': { min: 1, max: 1, label: 'Ảnh (bắt buộc đúng 1)' },
+  'elegant-blue': { min: 1, max: 1, label: 'Ảnh (bắt buộc đúng 1)' },
+  'minimal-white': { min: 1, max: 1, label: 'Ảnh (bắt buộc đúng 1)' },
+  'red-white-invitation': { min: 1, max: 1, label: 'Ảnh (bắt buộc đúng 1)' },
+}
+
+function getImageRule(templateId: string) {
+  return IMAGE_RULES[templateId] ?? { min: 0, max: 3, label: 'Ảnh (tối đa 3)' }
+}
 
 async function uploadToCloudinary(file: File): Promise<string> {
   const formData = new FormData()
@@ -40,12 +55,43 @@ function CreateForm() {
   const [error, setError] = useState('')
 
   const fileRef = useRef<HTMLInputElement>(null)
+  const currentTemplate = TEMPLATES.find(t => t.id === templateId)
+  const limits = currentTemplate?.fieldLimits ?? DEFAULT_FIELD_LIMITS
+  const imageRule = getImageRule(templateId)
+
+  useEffect(() => {
+    const warnings: string[] = []
+    if (name.length > limits.name) warnings.push(`Template này chỉ hiển thị tốt tối đa ${limits.name} ký tự cho tên`)
+    if (time.length > limits.time) warnings.push(`Template này chỉ hiển thị tốt tối đa ${limits.time} ký tự cho thời gian`)
+    if (location.length > limits.location) warnings.push(`Template này chỉ hiển thị tốt tối đa ${limits.location} ký tự cho địa điểm`)
+    if (message.length > limits.message) warnings.push(`Template này chỉ hiển thị tốt tối đa ${limits.message} ký tự cho lời nhắn`)
+
+    if (warnings.length > 0) {
+      setError(warnings[0])
+      return
+    }
+
+    if (error.startsWith('Template này chỉ hiển thị tốt tối đa')) {
+      setError('')
+    }
+  }, [templateId, name.length, time.length, location.length, message.length, limits.name, limits.time, limits.location, limits.message, error])
+
+  useEffect(() => {
+    // Trim extra selected images when switching to templates with stricter limits.
+    if (images.length > imageRule.max) {
+      setImages(prev => prev.slice(0, imageRule.max))
+      setPreviews(prev => prev.slice(0, imageRule.max))
+      setError(`Template này chỉ cho phép tối đa ${imageRule.max} ảnh`)
+    }
+  }, [templateId, imageRule.max, images.length])
 
   function handleFiles(files: FileList | null) {
     if (!files) return
-    const arr = Array.from(files).slice(0, 3 - images.length)
+    const remaining = Math.max(0, imageRule.max - images.length)
+    const arr = Array.from(files).slice(0, remaining)
     const valid = arr.filter(f => f.size <= 5 * 1024 * 1024)
     if (valid.length < arr.length) setError('Ảnh tối đa 5MB mỗi file')
+    if (remaining === 0) setError(`Template này chỉ cho phép tối đa ${imageRule.max} ảnh`)
     setImages(prev => [...prev, ...valid])
     setPreviews(prev => [...prev, ...valid.map(f => URL.createObjectURL(f))])
   }
@@ -55,10 +101,26 @@ function CreateForm() {
     setPreviews(prev => prev.filter((_, i) => i !== idx))
   }
 
+  function handlePreviewError(e: React.SyntheticEvent<HTMLImageElement>) {
+    const img = e.currentTarget
+    if (!img.src.endsWith(FALLBACK_PREVIEW_URL)) {
+      img.src = FALLBACK_PREVIEW_URL
+    }
+  }
+
   async function handleSubmit() {
     setError('')
     if (!name.trim() || !cls.trim() || !time.trim() || !location.trim()) {
       setError('Vui lòng điền đủ thông tin bắt buộc')
+      return
+    }
+
+    if (images.length < imageRule.min || images.length > imageRule.max) {
+      if (imageRule.min === imageRule.max) {
+        setError(`Template này yêu cầu đúng ${imageRule.min} ảnh`)
+      } else {
+        setError(`Template này yêu cầu từ ${imageRule.min} đến ${imageRule.max} ảnh`)
+      }
       return
     }
 
@@ -111,130 +173,189 @@ function CreateForm() {
         <h1 className="font-semibold text-gray-900">Tạo thiệp kỉ yếu</h1>
       </motion.div>
 
-      <div className="max-w-lg mx-auto px-4 pt-6 space-y-6">
-        {/* Template picker */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.4 }}
-        >
-          <p className="text-sm font-medium text-gray-700 mb-3">Phong cách</p>
-          <div className="flex gap-2">
-            {TEMPLATES.map(t => (
-              <motion.button
-                key={t.id}
-                onClick={() => setTemplateId(t.id)}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.98 }}
-                className={`flex-1 py-2 px-3 rounded-xl text-sm border transition-all
-                  ${templateId === t.id
-                    ? 'border-gray-900 bg-gray-900 text-white'
-                    : 'border-gray-200 bg-white text-gray-600 hover:border-gray-400'
-                  }`}
-              >
-                {t.name}
-              </motion.button>
-            ))}
-          </div>
-        </motion.div>
+      <div className="max-w-7xl mx-auto px-4 pt-6 pb-32 xl:grid xl:grid-cols-[minmax(0,1fr)_420px] xl:gap-8">
+        <div className="space-y-6 xl:max-w-xl">
+          {/* Template picker */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.4 }}
+          >
+            <p className="text-sm font-medium text-gray-700 mb-3">Phong cách</p>
+            <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+              {TEMPLATES.map(t => (
+                <motion.button
+                  key={t.id}
+                  onClick={() => setTemplateId(t.id)}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`shrink-0 min-w-max py-2 px-3 rounded-xl text-sm border transition-all
+                    ${templateId === t.id
+                      ? 'border-gray-900 bg-gray-900 text-white'
+                      : 'border-gray-200 bg-white text-gray-600 hover:border-gray-400'
+                    }`}
+                >
+                  {t.name}
+                </motion.button>
+              ))}
+            </div>
+          </motion.div>
 
-        {/* Fields */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.45 }}
-          className="bg-white rounded-2xl border border-gray-100 divide-y divide-gray-50"
-        >
-          {[
-            { label: 'Tên *', value: name, setter: setName, placeholder: 'Nguyễn Văn A' },
-            { label: 'Lớp *', value: cls, setter: setCls, placeholder: 'K61 CNTT' },
-            { label: 'Thời gian *', value: time, setter: setTime, placeholder: '18:00, Thứ 7, 20/06/2025' },
-            { label: 'Địa điểm *', value: location, setter: setLocation, placeholder: 'Nhà hàng Hà Nội' },
-          ].map(({ label, value, setter, placeholder }) => (
-            <div key={label} className="px-4 py-3">
-              <label className="text-xs text-gray-400 block mb-1">{label}</label>
-              <input
-                value={value}
-                onChange={e => setter(e.target.value)}
-                placeholder={placeholder}
-                className="w-full text-gray-900 placeholder-gray-300 outline-none text-sm"
+          {/* Mobile preview */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.35 }}
+            className="xl:hidden bg-white border border-gray-100 rounded-2xl p-3"
+          >
+            {/* <p className="text-xs text-gray-500 mb-2">Xem trước mẫu đã chọn</p> */}
+            {currentTemplate && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={currentTemplate.preview_url}
+                alt={currentTemplate.name}
+                onError={handlePreviewError}
+                className="w-full h-[52svh] min-h-[320px] max-h-[500px] object-contain bg-gray-100 rounded-xl"
+              />
+            )}
+          </motion.div>
+
+          {/* Fields */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.45 }}
+            className="bg-white rounded-2xl border border-gray-100 divide-y divide-gray-50"
+          >
+            {[
+              { label: 'Tên *', value: name, setter: setName, placeholder: 'Nguyễn Văn A', maxLength: limits.name, showCounter: true },
+              { label: 'Lớp *', value: cls, setter: setCls, placeholder: 'K61 CNTT', maxLength: 25, showCounter: false },
+              { label: 'Thời gian *', value: time, setter: setTime, placeholder: '18:00, Thứ 7, 20/06/2025', maxLength: limits.time, showCounter: true },
+              { label: 'Địa điểm *', value: location, setter: setLocation, placeholder: 'Nhà hàng Hà Nội', maxLength: limits.location, showCounter: true },
+            ].map(({ label, value, setter, placeholder, maxLength, showCounter }) => (
+              <div key={label} className="px-4 py-3">
+                <label className="text-xs text-gray-400 block mb-1">
+                  {label}
+                  {showCounter && <span className="float-right">{value.length}/{maxLength}</span>}
+                </label>
+                <input
+                  value={value}
+                  onChange={e => setter(e.target.value)}
+                  placeholder={placeholder}
+                  maxLength={maxLength}
+                  className="w-full text-gray-900 placeholder-gray-300 outline-none text-sm"
+                />
+              </div>
+            ))}
+            <div className="px-4 py-3">
+              <label className="text-xs text-gray-400 block mb-1">
+                Lời nhắn
+                <span className="float-right">{message.length}/{limits.message}</span>
+              </label>
+              <textarea
+                value={message}
+                onChange={e => setMessage(e.target.value)}
+                placeholder="Cảm ơn bạn đã đồng hành cùng mình suốt 4 năm..."
+                maxLength={limits.message}
+                rows={3}
+                className="w-full text-gray-900 placeholder-gray-300 outline-none text-sm resize-none"
               />
             </div>
-          ))}
-          <div className="px-4 py-3">
-            <label className="text-xs text-gray-400 block mb-1">Lời nhắn</label>
-            <textarea
-              value={message}
-              onChange={e => setMessage(e.target.value)}
-              placeholder="Cảm ơn bạn đã đồng hành cùng mình suốt 4 năm..."
-              rows={3}
-              className="w-full text-gray-900 placeholder-gray-300 outline-none text-sm resize-none"
-            />
-          </div>
-        </motion.div>
+          </motion.div>
 
-        {/* Image upload */}
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.2 }}
-          transition={{ duration: 0.45 }}
-        >
-          <p className="text-sm font-medium text-gray-700 mb-3">Ảnh (tối đa 3)</p>
-          <div className="flex gap-3 flex-wrap">
-            {previews.map((src, i) => (
-              <motion.div
-                key={i}
-                whileHover={{ scale: 1.05 }}
-                className="relative w-24 h-24 rounded-xl overflow-hidden bg-gray-100"
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={src} alt="" className="w-full h-full object-cover" />
-                <button
-                  onClick={() => removeImage(i)}
-                  className="absolute top-1 right-1 bg-black/50 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center"
+          {/* Image upload */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.45 }}
+          >
+            <p className="text-sm font-medium text-gray-700 mb-3">
+              {imageRule.label}
+            </p>
+            <div className="flex gap-3 flex-wrap">
+              {previews.map((src, i) => (
+                <motion.div
+                  key={i}
+                  whileHover={{ scale: 1.05 }}
+                  className="relative w-24 h-24 rounded-xl overflow-hidden bg-gray-100"
                 >
-                  ×
-                </button>
-              </motion.div>
-            ))}
-            {images.length < 3 && (
-              <motion.button
-                onClick={() => fileRef.current?.click()}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-24 h-24 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-300 hover:border-gray-400 transition-colors"
-              >
-                <span className="text-2xl">+</span>
-                <span className="text-xs mt-1">Thêm ảnh</span>
-              </motion.button>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={src} alt="" className="w-full h-full object-cover" />
+                  <button
+                    onClick={() => removeImage(i)}
+                    className="absolute top-1 right-1 bg-black/50 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center"
+                  >
+                    ×
+                  </button>
+                </motion.div>
+              ))}
+              {images.length < imageRule.max && (
+                <motion.button
+                  onClick={() => fileRef.current?.click()}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-24 h-24 rounded-xl border-2 border-dashed border-gray-200 flex flex-col items-center justify-center text-gray-300 hover:border-gray-400 transition-colors"
+                >
+                  <span className="text-2xl">+</span>
+                  <span className="text-xs mt-1">Thêm ảnh</span>
+                </motion.button>
+              )}
+            </div>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={e => handleFiles(e.target.files)}
+            />
+          </motion.div>
+
+          {error && (
+            <motion.p
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.25 }}
+              className="text-red-500 text-sm bg-red-50 px-4 py-3 rounded-xl"
+            >
+              {error}
+            </motion.p>
+          )}
+        </div>
+
+        {/* Desktop preview */}
+        <motion.aside
+          initial={{ opacity: 0, x: 12 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.35 }}
+          className="hidden xl:block"
+        >
+          <div className="sticky top-24 bg-white border border-gray-100 rounded-2xl p-4">
+            <p className="text-xs text-gray-500 mb-2">Xem trước mẫu đã chọn</p>
+            {currentTemplate && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={currentTemplate.preview_url}
+                alt={currentTemplate.name}
+                onError={handlePreviewError}
+                className="w-full h-[70svh] max-h-[620px] min-h-[420px] object-contain bg-gray-100 rounded-xl"
+              />
+            )}
+            {currentTemplate && (
+              <>
+                <p className="text-sm font-medium text-gray-900 mt-3">{currentTemplate.name}</p>
+                <p className="text-xs text-gray-500 mt-1">{currentTemplate.description}</p>
+              </>
             )}
           </div>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/*"
-            multiple
-            className="hidden"
-            onChange={e => handleFiles(e.target.files)}
-          />
-        </motion.div>
-
-        {error && (
-          <motion.p
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25 }}
-            className="text-red-500 text-sm bg-red-50 px-4 py-3 rounded-xl"
-          >
-            {error}
-          </motion.p>
-        )}
+        </motion.aside>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-4">
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 p-3 sm:p-4 pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
         <motion.button
           onClick={handleSubmit}
           disabled={loading}
