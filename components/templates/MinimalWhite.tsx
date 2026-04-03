@@ -37,7 +37,7 @@ export default function MinimalWhite({ name, class: cls, time, location, message
         {/* Message */}
         {message && (
           <div className="border-t border-gray-100 pt-6 mb-8">
-            <p className="text-gray-600 leading-relaxed">{message}</p>
+            <p className="text-gray-600 leading-relaxed whitespace-pre-line break-words">{message}</p>
           </div>
         )}
 

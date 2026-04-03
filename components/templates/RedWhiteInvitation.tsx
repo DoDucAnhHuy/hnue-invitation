@@ -31,7 +31,7 @@ export default function RedWhiteInvitation({ name, time, location, message, imag
           </div>
 
           <div
-            className="absolute right-[7%] top-[50.5%] w-[32%] text-[#575757]"
+            className="absolute right-[7%] top-[50.5%] w-[32%] text-[#575757] whitespace-pre-line break-words"
             style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 'clamp(12px, 2.9cqw, 20px)', lineHeight: 1.18 }}
           >
             {displayMessage}
@@ -45,10 +45,12 @@ export default function RedWhiteInvitation({ name, time, location, message, imag
           </div>
 
           <div
-            className="absolute right-[24%] bottom-[3.6%] w-[30%] text-[#636363] text-left"
+            className="absolute right-[24%] bottom-[.6%] w-[30%] h-[7.2%] overflow-hidden whitespace-normal break-words text-[#636363] text-left"
             style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 'clamp(10px, 2.1cqw, 16px)', lineHeight: 1.1 }}
           >
-            {displayLocation}
+            <p className="m-0 whitespace-normal break-words">
+              {displayLocation}
+            </p>
           </div>
         </div>
       </div>

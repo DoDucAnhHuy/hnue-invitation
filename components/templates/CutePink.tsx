@@ -63,7 +63,7 @@ export default function CutePink({ name, class: cls, time, location, message, im
           {/* Message */}
           {message && (
             <div className="bg-pink-50 rounded-2xl p-4 text-center">
-              <p className="text-gray-600 text-sm leading-relaxed italic">&ldquo;{message}&rdquo;</p>
+              <p className="text-gray-600 text-sm leading-relaxed italic whitespace-pre-line break-words">&ldquo;{message}&rdquo;</p>
             </div>
           )}
         </div>

@@ -54,7 +54,7 @@ export default function BlueYellowScrapbook({ name, time, location, message, ima
           </div>
 
           <div className="absolute bottom-[8.2%] left-[9%] w-[38%] rotate-[2deg] text-center text-[#171717] [font-family:'Times_New_Roman',serif] font-semibold">
-            <div className="leading-tight break-words" style={{ fontSize: 'clamp(10px, 3.5vw, 18px)' }}>{displayMessage}</div>
+            <div className="leading-tight whitespace-pre-line break-words" style={{ fontSize: 'clamp(10px, 3.5vw, 18px)' }}>{displayMessage}</div>
           </div>
         </div>
       </div>

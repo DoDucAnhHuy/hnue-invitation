@@ -28,3 +28,21 @@ export interface Invitation {
 }
 
 export type CreateInvitationInput = Omit<Invitation, 'id' | 'created_at'>
+
+export type FeedbackType = 'template_request' | 'bug_report'
+
+export interface TemplateRequestData {
+  url: string
+  note: string
+  image_url: string
+}
+
+export interface BugReportData {
+  note: string
+  image_url: string
+}
+
+export interface CreateFeedbackInput {
+  type: FeedbackType
+  data: TemplateRequestData | BugReportData
+}

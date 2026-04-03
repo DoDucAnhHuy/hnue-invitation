@@ -2,6 +2,15 @@ import { Template } from '@/types'
 
 export const TEMPLATES: Template[] = [
   {
+    id: 'grey-black-invitation',
+    name: 'Grey Black Invitation',
+    description: 'Tone xam-den thanh lich, phong cach graduation co dien',
+    keywords: ['grey', 'black', 'classic', 'graduation', 'party', 'elegant'],
+    preview_url: '/previews/grey-black-invitation.png',
+    color_scheme: 'neutral',
+    fieldLimits: { name: 20, time: 36, location: 52, message: 30 },
+  },
+  {
     id: 'red-white-invitation',
     name: 'Red White Invitation',
     description: 'Poster do-trang, style vintage cho le tot nghiep',

@@ -211,6 +211,7 @@ export default function GrungeSilver({
               fontStyle: "italic",
               color: "#666",
               lineHeight: 1.7,
+              whiteSpace: "pre-line",
               margin: "0",
               maxWidth: "680px",
             }}

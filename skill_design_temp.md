@@ -215,3 +215,41 @@ TemplateCute.tsx       +  cute-bg.png
 - **Chỉ code phần text overlay** lên trên nền
 - Nếu decor quan trọng bị text che → dịch chuyển text hoặc thêm `text-shadow` để readable
 - Với template có **2 cột thông tin** (như Blue-Yellow): dùng `display: flex; justify-content: space-around` thay vì absolute từng cái
+
+---
+
+## Context cập nhật (02/04/2026)
+
+### 1) Quy ước UX đã chốt trong dự án
+
+- Trang tạo thiệp (`/create`) hiển thị **preview ảnh tĩnh** theo template đã chọn (không dùng realtime preview).
+- Thanh chọn `Phong cách`:
+  - Mobile: cuộn ngang.
+  - Desktop: hiển thị đầy đủ (không bị cắt nút).
+- Mobile input không được tự zoom khi focus: input/textarea/select cần font-size >= 16px trên màn nhỏ.
+
+### 2) Quy ước chia sẻ thiệp
+
+- Link chia sẻ từ footer trỏ tới: `/invite/[id]/view`.
+- `/invite/[id]/view` chỉ render template, không có ShareBar/footer chia sẻ.
+- `/invite/[id]` có ShareBar + hiệu ứng mở phong bì.
+- Nội dung trang `/invite/[id]` phải chừa đáy để footer fixed không che thiệp.
+
+### 3) Rule ảnh theo template (create form)
+
+- `blue-yellow-scrapbook`: đúng 3 ảnh.
+- `cute-pink`: đúng 1 ảnh.
+- `elegant-blue`: đúng 1 ảnh.
+- `minimal-white`: đúng 1 ảnh.
+- `red-white-invitation`: đúng 1 ảnh.
+
+### 4) Tình trạng template đã thêm
+
+- Đã có template `red-white-invitation` (clone từ `Red_White.png` + `Red_White_text.png`).
+- Preview file tương ứng: `public/previews/red-white-invitation.png`.
+- `RedWhiteInvitation.tsx` dùng layout absolute theo % + container cố định tỉ lệ.
+
+### 5) Bài học thao tác git
+
+- Không commit file nhị phân lớn vào repo (đặc biệt `.exe` trong `temp`).
+- Đã gặp lỗi push do file >100MB; cách xử lý là rewrite commit và push lại bằng `--force-with-lease`.

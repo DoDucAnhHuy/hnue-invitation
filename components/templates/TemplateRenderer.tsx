@@ -3,6 +3,7 @@ import BlueYellowScrapbook from './BlueYellowScrapbook'
 import CutePink from './CutePink'
 import ElegantBlue from './ElegantBlue'
 import GrungeSilver from './GrungeSilver'
+import GreyBlackInvitation from './GreyBlackInvitation'
 import MinimalWhite from './MinimalWhite'
 import RedWhiteInvitation from './RedWhiteInvitation'
 
@@ -11,6 +12,7 @@ const TEMPLATE_MAP: Record<string, React.ComponentType<Invitation>> = {
   'cute-pink': CutePink,
   'elegant-blue': ElegantBlue,
   'grunge-silver': GrungeSilver,
+  'grey-black-invitation': GreyBlackInvitation,
   'minimal-white': MinimalWhite,
   'red-white-invitation': RedWhiteInvitation,
 }

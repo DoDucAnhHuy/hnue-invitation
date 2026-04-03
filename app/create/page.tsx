@@ -17,6 +17,7 @@ const IMAGE_RULES: Record<string, { min: number; max: number; label: string }> =
   'elegant-blue': { min: 1, max: 1, label: 'Ảnh (bắt buộc đúng 1)' },
   'minimal-white': { min: 1, max: 1, label: 'Ảnh (bắt buộc đúng 1)' },
   'red-white-invitation': { min: 1, max: 1, label: 'Ảnh (bắt buộc đúng 1)' },
+  'grey-black-invitation': { min: 1, max: 1, label: 'Ảnh (bắt buộc đúng 1)' },
 }
 
 function getImageRule(templateId: string) {
@@ -173,8 +174,8 @@ function CreateForm() {
         <h1 className="font-semibold text-gray-900">Tạo thiệp kỉ yếu</h1>
       </motion.div>
 
-      <div className="max-w-7xl mx-auto px-4 pt-6 pb-32 xl:grid xl:grid-cols-[minmax(0,1fr)_420px] xl:gap-8">
-        <div className="space-y-6 xl:max-w-xl">
+      <div className="max-w-7xl mx-auto px-4 pt-6 pb-32 lg:grid lg:grid-cols-[minmax(0,1fr)_420px] lg:gap-8">
+        <div className="space-y-6 lg:max-w-xl">
           {/* Template picker */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -183,14 +184,14 @@ function CreateForm() {
             transition={{ duration: 0.4 }}
           >
             <p className="text-sm font-medium text-gray-700 mb-3">Phong cách</p>
-            <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+            <div className="grid grid-flow-col auto-cols-max gap-2 overflow-x-auto pb-1 no-scrollbar md:grid-flow-row md:grid-cols-3 md:auto-cols-auto md:overflow-visible">
               {TEMPLATES.map(t => (
                 <motion.button
                   key={t.id}
                   onClick={() => setTemplateId(t.id)}
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`shrink-0 min-w-max py-2 px-3 rounded-xl text-sm border transition-all
+                  className={`min-w-max md:min-w-0 md:w-full py-2 px-3 rounded-xl text-sm border transition-all
                     ${templateId === t.id
                       ? 'border-gray-900 bg-gray-900 text-white'
                       : 'border-gray-200 bg-white text-gray-600 hover:border-gray-400'
@@ -208,7 +209,7 @@ function CreateForm() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.35 }}
-            className="xl:hidden bg-white border border-gray-100 rounded-2xl p-3"
+            className="lg:hidden bg-white border border-gray-100 rounded-2xl p-3"
           >
             {/* <p className="text-xs text-gray-500 mb-2">Xem trước mẫu đã chọn</p> */}
             {currentTemplate && (
@@ -332,7 +333,7 @@ function CreateForm() {
           initial={{ opacity: 0, x: 12 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.35 }}
-          className="hidden xl:block"
+          className="hidden lg:block"
         >
           <div className="sticky top-24 bg-white border border-gray-100 rounded-2xl p-4">
             <p className="text-xs text-gray-500 mb-2">Xem trước mẫu đã chọn</p>

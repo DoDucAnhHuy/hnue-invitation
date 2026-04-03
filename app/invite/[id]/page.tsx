@@ -33,7 +33,9 @@ export default async function InvitePage({ params }: Props) {
 
   return (
     <>
-      <TemplateRenderer {...invitation} />
+      <div className="pb-28 sm:pb-32">
+        <TemplateRenderer {...invitation} />
+      </div>
       <InviteReveal templateId={invitation.template_id} />
       <ShareBar id={params.id} name={invitation.name} />
     </>

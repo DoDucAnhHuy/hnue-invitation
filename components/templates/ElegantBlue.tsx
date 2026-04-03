@@ -44,7 +44,7 @@ export default function ElegantBlue({ name, class: cls, time, location, message,
 
           {message && (
             <div className="border-l-2 border-amber-400 pl-4">
-              <p className="text-slate-300 text-sm italic leading-relaxed">&ldquo;{message}&rdquo;</p>
+              <p className="text-slate-300 text-sm italic leading-relaxed whitespace-pre-line break-words">&ldquo;{message}&rdquo;</p>
             </div>
           )}
         </div>
