@@ -269,7 +269,7 @@ function CreateForm() {
                 {/* <label className="text-[11px] text-gray-400 block mb-1">Thời gian</label> */}
                 <DatePicker
                   selected={selectedDateTime}
-                  onChange={(date) => setSelectedDateTime(date)}
+                  onChange={(date: Date | null) => setSelectedDateTime(date)}
                   showTimeSelect
                   timeIntervals={15}
                   dateFormat="HH:mm, dd/MM/yyyy"

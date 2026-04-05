@@ -3,6 +3,8 @@ import { collection, getDocs } from 'firebase/firestore'
 import { db } from '@/lib/firebase'
 import { TEMPLATES } from '@/lib/templates'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(req: NextRequest) {
   try {
     const limitParam = Number(req.nextUrl.searchParams.get('limit') || '4')
