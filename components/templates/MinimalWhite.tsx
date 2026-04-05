@@ -15,7 +15,7 @@ export default function MinimalWhite({ name, class: cls, time, location, message
         {/* Main image */}
         {images && images.length > 0 && (
           <div className="relative h-80 rounded-2xl overflow-hidden mb-8 bg-gray-100">
-            <Image src={images[0]} alt={name} fill className="object-cover" />
+            <Image src={images[0]} alt={name} fill sizes="(max-width: 640px) 100vw, 384px" className="object-cover" />
           </div>
         )}
 
@@ -46,7 +46,7 @@ export default function MinimalWhite({ name, class: cls, time, location, message
           <div className="grid grid-cols-2 gap-2">
             {images.slice(1).map((url, i) => (
               <div key={i} className="relative h-36 rounded-xl overflow-hidden bg-gray-100">
-                <Image src={url} alt="" fill className="object-cover" />
+                <Image src={url} alt="" fill sizes="(max-width: 640px) 44vw, 186px" className="object-cover" />
               </div>
             ))}
           </div>

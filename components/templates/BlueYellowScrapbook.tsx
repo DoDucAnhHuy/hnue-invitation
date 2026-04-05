@@ -11,13 +11,13 @@ export default function BlueYellowScrapbook({ name, time, location, message, ima
   return (
     <div className="min-h-screen bg-[#efb625] flex items-center justify-center px-4 py-8">
       <div className="relative w-[min(92vw,390px)] aspect-[1587/2245] overflow-hidden rounded-md shadow-[0_20px_45px_rgba(0,0,0,0.22)]">
-        <Image src={bgMobile} alt="" fill className="object-cover" priority />
+        <Image src={bgMobile} alt="" fill sizes="(max-width: 640px) 92vw, 390px" className="object-cover" priority />
 
         <div className="absolute inset-0 pointer-events-none">
           {images?.[0] && (
             <div className="absolute left-[16.2%] top-[42.5%] w-[26%] h-[16%] rotate-[-8deg] bg-white p-[0.5%] shadow-[0_8px_18px_rgba(0,0,0,0.22)]">
               <div className="relative w-full h-full border border-zinc-200">
-                <Image src={images[0]} alt="" fill className="object-cover" />
+                <Image src={images[0]} alt="" fill sizes="(max-width: 640px) 24vw, 101px" className="object-cover" />
               </div>
             </div>
           )}
@@ -25,7 +25,7 @@ export default function BlueYellowScrapbook({ name, time, location, message, ima
           {images?.[1] && (
             <div className="absolute right-[18.2%] top-[33.1%] w-[21%] h-[18.0%] rotate-[0deg] bg-white p-[0.5%] shadow-[0_8px_18px_rgba(0,0,0,0.2)]">
               <div className="relative w-full h-full border border-zinc-200">
-                <Image src={images[1]} alt="" fill className="object-cover" />
+                <Image src={images[1]} alt="" fill sizes="(max-width: 640px) 20vw, 82px" className="object-cover" />
               </div>
             </div>
           )}
@@ -33,7 +33,7 @@ export default function BlueYellowScrapbook({ name, time, location, message, ima
           {images?.[2] && (
             <div className="absolute right-[24.5%] top-[46.5%] w-[19%] h-[17%] rotate-[-15deg] bg-white p-[0.5%] shadow-[0_9px_20px_rgba(0,0,0,0.24)]">
               <div className="relative w-full h-full border border-zinc-200">
-                <Image src={images[2]} alt="" fill className="object-cover" />
+                <Image src={images[2]} alt="" fill sizes="(max-width: 640px) 18vw, 74px" className="object-cover" />
               </div>
             </div>
           )}

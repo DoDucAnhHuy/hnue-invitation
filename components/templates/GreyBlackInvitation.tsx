@@ -15,12 +15,12 @@ export default function GreyBlackInvitation({ name, class: cls, time, location, 
         className="relative w-[min(92vw,390px)] aspect-[1240/1748] overflow-hidden rounded-md shadow-[0_20px_45px_rgba(0,0,0,0.2)] origin-center lg:scale-[1.12] xl:scale-[1.22]"
         style={{ containerType: 'inline-size' }}
       >
-        <Image src={bgClean} alt="" fill className="object-cover" priority />
+        <Image src={bgClean} alt="" fill sizes="(max-width: 640px) 92vw, 390px" className="object-cover" priority />
 
         <div className="absolute inset-0 pointer-events-none">
           {images?.[0] && (
             <div className="absolute left-[32.5%] top-[19%] w-[37.8%] h-[26.5%] overflow-hidden rounded-[3.5%]">
-              <Image src={images[0]} alt="" fill className="object-cover" />
+              <Image src={images[0]} alt="" fill sizes="(max-width: 640px) 35vw, 147px" className="object-cover" />
             </div>
           )}
 

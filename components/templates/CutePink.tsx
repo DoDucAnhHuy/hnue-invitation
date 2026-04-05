@@ -20,6 +20,7 @@ export default function CutePink({ name, class: cls, time, location, message, im
               src={images[0]}
               alt={name}
               fill
+              sizes="(max-width: 640px) 100vw, 384px"
               className="object-cover"
             />
           </div>
@@ -74,7 +75,7 @@ export default function CutePink({ name, class: cls, time, location, message, im
         <div className="mt-6 grid grid-cols-2 gap-3 w-full max-w-sm">
           {images.slice(1).map((url, i) => (
             <div key={i} className="relative h-40 rounded-2xl overflow-hidden">
-              <Image src={url} alt="" fill className="object-cover" />
+              <Image src={url} alt="" fill sizes="(max-width: 640px) 44vw, 186px" className="object-cover" />
             </div>
           ))}
         </div>

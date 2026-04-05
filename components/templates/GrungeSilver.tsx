@@ -36,6 +36,7 @@ export default function GrungeSilver({
         src={bgImage}
         alt=""
         fill
+        sizes="100vw"
         className="md:hidden"
         style={{ objectFit: "cover", objectPosition: "top center" }}
         priority
@@ -44,6 +45,7 @@ export default function GrungeSilver({
         src={bgImagePc}
         alt=""
         fill
+        sizes="100vw"
         className="hidden md:block"
         style={{ objectFit: "cover", objectPosition: "top center" }}
         priority

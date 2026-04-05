@@ -17,7 +17,7 @@ export default function ElegantBlue({ name, class: cls, time, location, message,
       <div className="bg-slate-800 rounded-2xl w-full max-w-sm overflow-hidden border border-slate-700">
         {images && images.length > 0 && (
           <div className="relative h-64">
-            <Image src={images[0]} alt={name} fill className="object-cover opacity-80" />
+            <Image src={images[0]} alt={name} fill sizes="(max-width: 640px) 100vw, 384px" className="object-cover opacity-80" />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-800 to-transparent" />
           </div>
         )}
@@ -54,7 +54,7 @@ export default function ElegantBlue({ name, class: cls, time, location, message,
         <div className="mt-4 flex gap-3 w-full max-w-sm">
           {images.slice(1).map((url, i) => (
             <div key={i} className="relative flex-1 h-32 rounded-xl overflow-hidden">
-              <Image src={url} alt="" fill className="object-cover opacity-80" />
+              <Image src={url} alt="" fill sizes="(max-width: 640px) 44vw, 186px" className="object-cover opacity-80" />
             </div>
           ))}
         </div>

@@ -3,6 +3,9 @@
 import { useState, useRef, Suspense, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
+import DatePicker from 'react-datepicker'
+import { format } from 'date-fns'
+import { vi } from 'date-fns/locale'
 import { TEMPLATES } from '@/lib/templates'
 
 const DEFAULT_FIELD_LIMITS = { name: 25, time: 35, location: 40, message: 60 }
@@ -22,6 +25,11 @@ const IMAGE_RULES: Record<string, { min: number; max: number; label: string }> =
 
 function getImageRule(templateId: string) {
   return IMAGE_RULES[templateId] ?? { min: 0, max: 3, label: 'Ảnh (tối đa 3)' }
+}
+
+function formatDateTimeForDisplay(value: Date | null): string {
+  if (!value) return ''
+  return format(value, 'HH:mm, dd/MM/yyyy')
 }
 
 async function uploadToCloudinary(file: File): Promise<string> {
@@ -47,7 +55,7 @@ function CreateForm() {
   const [templateId, setTemplateId] = useState(defaultTemplate)
   const [name, setName] = useState('')
   const [cls, setCls] = useState('')
-  const [time, setTime] = useState('')
+  const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(null)
   const [location, setLocation] = useState('')
   const [message, setMessage] = useState('')
   const [images, setImages] = useState<File[]>([])
@@ -59,6 +67,7 @@ function CreateForm() {
   const currentTemplate = TEMPLATES.find(t => t.id === templateId)
   const limits = currentTemplate?.fieldLimits ?? DEFAULT_FIELD_LIMITS
   const imageRule = getImageRule(templateId)
+  const time = formatDateTimeForDisplay(selectedDateTime)
 
   useEffect(() => {
     const warnings: string[] = []
@@ -234,7 +243,6 @@ function CreateForm() {
             {[
               { label: 'Tên *', value: name, setter: setName, placeholder: 'Nguyễn Văn A', maxLength: limits.name, showCounter: true },
               { label: 'Lớp *', value: cls, setter: setCls, placeholder: 'K61 CNTT', maxLength: 25, showCounter: false },
-              { label: 'Thời gian *', value: time, setter: setTime, placeholder: '18:00, Thứ 7, 20/06/2025', maxLength: limits.time, showCounter: true },
               { label: 'Địa điểm *', value: location, setter: setLocation, placeholder: 'Nhà hàng Hà Nội', maxLength: limits.location, showCounter: true },
             ].map(({ label, value, setter, placeholder, maxLength, showCounter }) => (
               <div key={label} className="px-4 py-3">
@@ -251,6 +259,31 @@ function CreateForm() {
                 />
               </div>
             ))}
+
+            <div className="px-4 py-3">
+              <label className="text-xs text-gray-400 block mb-1">
+                Thời gian *
+                <span className="float-right">{time.length}/{limits.time}</span>
+              </label>
+              <div className="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 transition-colors focus-within:border-gray-400 focus-within:bg-white">
+                {/* <label className="text-[11px] text-gray-400 block mb-1">Thời gian</label> */}
+                <DatePicker
+                  selected={selectedDateTime}
+                  onChange={(date) => setSelectedDateTime(date)}
+                  showTimeSelect
+                  timeIntervals={15}
+                  dateFormat="HH:mm, dd/MM/yyyy"
+                  locale={vi}
+                  placeholderText="Chọn ngày và giờ"
+                  className="w-full bg-transparent text-gray-900 outline-none text-sm"
+                  popperPlacement="bottom-start"
+                />
+              </div>
+              <p className="text-[11px] text-gray-400 mt-1">
+                Hiển thị: <span className="text-gray-600">{time || 'Chưa chọn'}</span>
+              </p>
+            </div>
+
             <div className="px-4 py-3">
               <label className="text-xs text-gray-400 block mb-1">
                 Lời nhắn

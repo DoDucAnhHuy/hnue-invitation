@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 
 export default function ShareBar({ id, name }: { id: string; name: string }) {
   const [copied, setCopied] = useState(false)
+  const [showQr, setShowQr] = useState(false)
   const [showBanner, setShowBanner] = useState(false)
   const searchParams = useSearchParams()
 
@@ -20,6 +21,7 @@ export default function ShareBar({ id, name }: { id: string; name: string }) {
   const shareUrl = typeof window !== 'undefined'
     ? `${window.location.origin}/invite/${id}/view`
     : `/invite/${id}/view`
+  const qrImageUrl = `https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(shareUrl)}`
 
   function copyLink() {
     navigator.clipboard.writeText(shareUrl)
@@ -57,12 +59,12 @@ export default function ShareBar({ id, name }: { id: string; name: string }) {
         transition={{ duration: 0.35 }}
         className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur border-t border-gray-100 p-3 sm:p-4 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] z-40"
       >
-        <div className="max-w-md mx-auto grid grid-cols-2 sm:grid-cols-[1fr_auto_auto] gap-2">
+        <div className="max-w-md mx-auto grid grid-cols-3 sm:grid-cols-[1fr_auto_auto_auto] gap-2">
           <motion.button
             onClick={copyLink}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
-            className="col-span-2 sm:col-span-1 bg-gray-900 text-white py-3 rounded-xl text-sm font-medium hover:bg-gray-800 transition-colors"
+            className="col-span-3 sm:col-span-1 bg-gray-900 text-white py-3 rounded-xl text-sm font-medium hover:bg-gray-800 transition-colors"
           >
             {copied ? '✓ Đã copy!' : '🔗 Copy link'}
           </motion.button>
@@ -82,8 +84,61 @@ export default function ShareBar({ id, name }: { id: string; name: string }) {
           >
             FB
           </motion.button>
+          <motion.button
+            onClick={() => setShowQr(true)}
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.98 }}
+            className="px-4 py-3 rounded-xl bg-zinc-800 text-white text-sm font-medium hover:bg-zinc-700 transition-colors"
+          >
+            QR
+          </motion.button>
         </div>
       </motion.div>
+
+      <AnimatePresence>
+        {showQr && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/45 backdrop-blur-[1px] z-[60] p-4 flex items-center justify-center"
+            onClick={() => setShowQr(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 12, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 10, scale: 0.98 }}
+              transition={{ duration: 0.2 }}
+              className="w-full max-w-sm rounded-2xl bg-white p-4 border border-gray-100 shadow-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-semibold text-gray-900">Quét mã QR để mở thiệp</p>
+                <button
+                  onClick={() => setShowQr(false)}
+                  className="text-gray-400 hover:text-gray-600 text-sm"
+                >
+                  Đóng
+                </button>
+              </div>
+
+              <div className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={qrImageUrl} alt="QR chia sẻ thiệp" className="w-full rounded-lg bg-white" />
+              </div>
+
+              <p className="text-xs text-gray-500 mt-3 break-all">{shareUrl}</p>
+
+              <button
+                onClick={copyLink}
+                className="mt-3 w-full rounded-xl bg-gray-900 text-white py-2.5 text-sm font-medium hover:bg-gray-800 transition-colors"
+              >
+                {copied ? '✓ Đã copy link' : 'Copy link này'}
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   )
 }
